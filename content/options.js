@@ -19,6 +19,10 @@ var state = {
   dpr: [
     {id: true, title: 'Preserve original DPI size'},
     {id: false, title: 'Adjust to actual size'}
+  ],
+  tradingmlHost: [
+    {id: "http://0.0.0.0:5000/api/predict", title: '[DEVELOPER] local server'},
+    {id: "http://website.com:5000/api/predict", title: 'Production server'},
   ]
 }
 
@@ -27,6 +31,7 @@ chrome.storage.sync.get((config) => {
   state.format.forEach((item) => item.checked = item.id === config.format)
   state.save.forEach((item) => item.checked = item.id === config.save)
   state.dpr.forEach((item) => item.checked = item.id === config.dpr)
+  state.tradingmlHost.forEach((item) => item.checked = item.id === config.tradingmlHost)
   m.redraw()
 })
 
@@ -133,6 +138,26 @@ m.mount(document.querySelector('main'), {
               type: 'radio', name: 'dpr',
               checked: item.checked && 'checked',
               onchange: events.option('dpr', item)
+            }),
+            m('.mdc-radio__background',
+              m('.mdc-radio__outer-circle'),
+              m('.mdc-radio__inner-circle'),
+            ),
+          ),
+          m('span', item.title)
+        )
+      )
+    ),
+
+    m('.bs-callout',
+      m('h4.mdc-typography--headline5', 'Server Host'),
+      state.tradingmlHost.map((item) =>
+        m('label.s-label', {onupdate: onupdate(item)},
+          m('.mdc-radio',
+            m('input.mdc-radio__native-control', {
+              type: 'radio', name: 'tradingmlHost',
+              checked: item.checked && 'checked',
+              onchange: events.option('tradingmlHost', item)
             }),
             m('.mdc-radio__background',
               m('.mdc-radio__outer-circle'),

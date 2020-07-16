@@ -1,6 +1,8 @@
 
 var jcrop, selection
 
+let serverHost = "";
+
 var overlay = ((active) => (state) => {
   active = typeof state === 'boolean' ? state : state === null ? active : !active
   $('.jcrop-holder')[active ? 'show' : 'hide']()
@@ -52,6 +54,8 @@ var init = (done) => {
 
 var capture = (force) => {
   chrome.storage.sync.get((config) => {
+    serverHost = config.tradingmlHost;
+
     if (selection && (config.method === 'crop' || (config.method === 'wait' && force))) {
       jcrop.release()
       setTimeout(() => {
@@ -91,8 +95,22 @@ var save = (image, format, save) => {
     let name = filename(format);
     chrome.storage.local.set({'tradingml-screenshot': image}, function() {
       chrome.storage.local.get(['tradingml-screenshot'], function(result) {
-        console.log('Value currently is ', result['tradingml-screenshot']);
-          // TODO : POST AJAX / SHOW RESULT
+
+        var settings = {
+          type: "POST",
+          url: serverHost,
+          data: {
+            "image": {
+              name: filename(format),
+              content: result['tradingml-screenshot']
+            }
+          },
+        };
+
+        $.ajax(settings).done(function (response) {
+          alert(response);
+        });
+
       });
     });
   }
@@ -111,7 +129,7 @@ var save = (image, format, save) => {
       ].join('\n'))
     })
   }
-}
+};
 
 window.addEventListener('resize', ((timeout) => () => {
   clearTimeout(timeout)
