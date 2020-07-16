@@ -13,7 +13,8 @@ var state = {
   ],
   save: [
     {id: 'file', title: 'To File'},
-    {id: 'clipboard', title: 'To Clipboard (Base64)'}
+    {id: 'clipboard', title: 'To Clipboard (Base64)'},
+    {id: 'localStorage', title: '[TRADINGML] To localStorage (Base64)'},
   ],
   dpr: [
     {id: true, title: 'Preserve original DPI size'},

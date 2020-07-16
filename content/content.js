@@ -87,6 +87,15 @@ var filename = (format) => {
 }
 
 var save = (image, format, save) => {
+  if (save === 'localStorage') {
+    let name = filename(format);
+    chrome.storage.local.set({'tradingml-screenshot': image}, function() {
+      chrome.storage.local.get(['tradingml-screenshot'], function(result) {
+        console.log('Value currently is ', result['tradingml-screenshot']);
+          // TODO : POST AJAX / SHOW RESULT
+      });
+    });
+  }
   if (save === 'file') {
     var link = document.createElement('a')
     link.download = filename(format)
