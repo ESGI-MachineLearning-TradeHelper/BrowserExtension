@@ -85,29 +85,32 @@ var filename = (format) => {
   var ext = (format) => format === 'jpeg' ? 'jpg' : format === 'png' ? 'png' : 'png'
   var timestamp = (now) =>
     [pad(now.getFullYear()), pad(now.getMonth() + 1), pad(now.getDate())].join('-')
-    + ' - ' +
+    + '-' +
     [pad(now.getHours()), pad(now.getMinutes()), pad(now.getSeconds())].join('-')
-  return `Screenshot Capture - ${timestamp(new Date())}.${ext(format)}`
+  return `sc-${timestamp(new Date())}.${ext(format)}`
 }
 
 var save = (image, format, save) => {
   if (save === 'localStorage') {
     let name = filename(format);
-    chrome.storage.local.set({'tradingml-screenshot': image}, function() {
-      chrome.storage.local.get(['tradingml-screenshot'], function(result) {
 
+    chrome.storage.local.set({ [name]: image }, function() {
+      chrome.storage.local.get([name], function(result) {
         var settings = {
           type: "POST",
-          url: serverHost,
+          url: serverHost + '?type=3',
           data: {
             "image": {
               name: filename(format),
-              content: result['tradingml-screenshot']
+              content: result[name]
             }
           },
         };
 
         $.ajax(settings).done(function (response) {
+          console.log(response);
+          response.imgSrc = result[name];
+
           chrome.runtime.sendMessage({
             name: "popup-response-received",
             response: response
@@ -115,7 +118,7 @@ var save = (image, format, save) => {
         }.bind(this));
 
       });
-    });
+    }.bind(this));
   }
   if (save === 'file') {
     var link = document.createElement('a')
@@ -162,12 +165,13 @@ chrome.runtime.onMessage.addListener((req, sender, res) => {
 
 chrome.runtime.onMessage.addListener((request) => {
   if(request.type === 'popup-modal'){
-    showModal();
+    showModal(request.data.imgSrc, request.data.predict, request.data.predict_percent);
   }
 })
 
-const showModal = () => {
-  const modal = document.createElement("dialog");
+let modal = document.createElement("dialog");
+
+const showModal = (imageSrc, predictName, predictPercent) => {
   modal.setAttribute(
     "style",`
 height:450px;
@@ -178,16 +182,32 @@ background-color:white;
 position: fixed; box-shadow: 0px 12px 48px rgba(29, 5, 64, 0.32);
 `
   );
-  modal.innerHTML = `<iframe id="popup-content"; style="height:100%"></iframe>
-<div style="position:absolute; top:0px; left:5px;">
+  modal.innerHTML = `
 <button style="padding: 8px 12px; font-size: 16px; border: none; border-radius: 20px;">x</button>
-</div>`;
+<div id="result-container">
+    <div id="result-image-container">
+      <img id="result-image">
+    </div>
+    <div id="result-container">
+      <div id="result-predict-name-container">
+        <span id="result-predict-name-info">Forme prédite :</span>
+        <span id="result-predict-name">rectangle</span>
+      </div>
+      <div id="result-predict-percen-container">
+        <span id="result-predict-percent-info">Probabilité :</span>
+        <span id="result-predict-percent">50%</span>
+      </div>
+    </div>
+</div>
+`;
   document.body.appendChild(modal);
-  const dialog = document.querySelector("dialog");
+  let dialog = document.querySelector("dialog");
   dialog.showModal();
-  const iframe = document.getElementById("popup-content");
-  iframe.src = chrome.extension.getURL("content/modal.html");
-  iframe.frameBorder = 0;
+
+  $(modal).find('#result-image')[0].src = imageSrc;
+  $(modal).find('#result-predict-name').first().text(predictName);
+  $(modal).find('#result-predict-percent').first().text(predictPercent);
+
   dialog.querySelector("button").addEventListener("click", () => {
     dialog.close();
   });

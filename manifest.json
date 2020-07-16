@@ -23,8 +23,7 @@
 
   "web_accessible_resources": [
     "/images/Jcrop.gif",
-    "/images/pixel.png",
-    "content/modal.html"
+    "/images/pixel.png"
   ],
 
   "commands": {
