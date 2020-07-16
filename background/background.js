@@ -137,3 +137,13 @@ function crop (image, area, dpr, preserve, format, done) {
   }
   img.src = image
 }
+
+chrome.runtime.onMessage.addListener(
+  function (request, sender, sendResponse) {
+    if (request.name && request.name === "popup-response-received") {
+      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, {type: "popup-modal"});
+      });
+    }
+  }
+);

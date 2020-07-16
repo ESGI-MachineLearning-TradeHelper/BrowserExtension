@@ -23,7 +23,8 @@
 
   "web_accessible_resources": [
     "/images/Jcrop.gif",
-    "/images/pixel.png"
+    "/images/pixel.png",
+    "content/modal.html"
   ],
 
   "commands": {
@@ -45,6 +46,7 @@
 
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ]
 }
