@@ -23,6 +23,13 @@ var state = {
   tradingmlHost: [
     {id: "http://0.0.0.0:5000/api/predict", title: '[DEVELOPER] local server'},
     {id: "http://website.com:5000/api/predict", title: 'Production server'},
+  ],
+  tradingmlType: [
+    {id: "1", title: 'Linear'},
+    {id: "2", title: 'CNN'},
+    {id: "3", title: 'Perceptron'},
+    {id: "4", title: 'RNN'},
+    {id: "5", title: 'UNET'},
   ]
 }
 
@@ -32,6 +39,7 @@ chrome.storage.sync.get((config) => {
   state.save.forEach((item) => item.checked = item.id === config.save)
   state.dpr.forEach((item) => item.checked = item.id === config.dpr)
   state.tradingmlHost.forEach((item) => item.checked = item.id === config.tradingmlHost)
+  state.tradingmlType.forEach((item) => item.checked = item.id === config.tradingmlType)
   m.redraw()
 })
 
@@ -69,85 +77,6 @@ var onupdate = (item) => (vnode) => {
 
 m.mount(document.querySelector('main'), {
   view: () => [
-    m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Capture Method'),
-      state.method.map((item) =>
-        m('label.s-label', {onupdate: onupdate(item)},
-          m('.mdc-radio',
-            m('input.mdc-radio__native-control', {
-              type: 'radio', name: 'method',
-              checked: item.checked && 'checked',
-              onchange: events.option('method', item)
-            }),
-            m('.mdc-radio__background',
-              m('.mdc-radio__outer-circle'),
-              m('.mdc-radio__inner-circle'),
-            ),
-          ),
-          m('span', m('em', item.icon), item.title)
-        )
-      )
-    ),
-
-    m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Image Format'),
-      state.format.map((item) =>
-        m('label.s-label', {onupdate: onupdate(item)},
-          m('.mdc-radio',
-            m('input.mdc-radio__native-control', {
-              type: 'radio', name: 'format',
-              checked: item.checked && 'checked',
-              onchange: events.option('format', item)
-            }),
-            m('.mdc-radio__background',
-              m('.mdc-radio__outer-circle'),
-              m('.mdc-radio__inner-circle'),
-            ),
-          ),
-          m('span', item.title)
-        )
-      )
-    ),
-
-    m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Save Format'),
-      state.save.map((item) =>
-        m('label.s-label', {onupdate: onupdate(item)},
-          m('.mdc-radio',
-            m('input.mdc-radio__native-control', {
-              type: 'radio', name: 'save',
-              checked: item.checked && 'checked',
-              onchange: events.option('save', item)
-            }),
-            m('.mdc-radio__background',
-              m('.mdc-radio__outer-circle'),
-              m('.mdc-radio__inner-circle'),
-            ),
-          ),
-          m('span', item.title)
-        )
-      )
-    ),
-
-    m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Screenshot Size'),
-      state.dpr.map((item) =>
-        m('label.s-label', {onupdate: onupdate(item)},
-          m('.mdc-radio',
-            m('input.mdc-radio__native-control', {
-              type: 'radio', name: 'dpr',
-              checked: item.checked && 'checked',
-              onchange: events.option('dpr', item)
-            }),
-            m('.mdc-radio__background',
-              m('.mdc-radio__outer-circle'),
-              m('.mdc-radio__inner-circle'),
-            ),
-          ),
-          m('span', item.title)
-        )
-      )
-    ),
 
     m('.bs-callout',
       m('h4.mdc-typography--headline5', 'Server Host'),
@@ -170,27 +99,23 @@ m.mount(document.querySelector('main'), {
     ),
 
     m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Keyboard Shortcut'),
-      state.shortcut &&
-      m('p', 'Current keyboard shortcut ', m('code', state.shortcut)),
-      !state.shortcut &&
-      m('p', 'No keyboard shortcut set'),
-      m('button.mdc-button mdc-button--raised s-button', {
-        oncreate: oncreate.ripple,
-        onclick: events.button('shortcut')
-        },
-        'Update'
+      m('h4.mdc-typography--headline5', '[ML] Model Type'),
+      state.tradingmlType.map((item) =>
+        m('label.s-label', {onupdate: onupdate(item)},
+          m('.mdc-radio',
+            m('input.mdc-radio__native-control', {
+              type: 'radio', name: 'tradingmlType',
+              checked: item.checked && 'checked',
+              onchange: events.option('tradingmlType', item)
+            }),
+            m('.mdc-radio__background',
+              m('.mdc-radio__outer-circle'),
+              m('.mdc-radio__inner-circle'),
+            ),
+          ),
+          m('span', item.title)
+        )
       )
     ),
-
-    m('.bs-callout',
-      m('h4.mdc-typography--headline5', 'Save Location'),
-      m('button.mdc-button mdc-button--raised s-button', {
-        oncreate: oncreate.ripple,
-        onclick: events.button('location')
-        },
-        'Update'
-      )
-    )
   ]
 })

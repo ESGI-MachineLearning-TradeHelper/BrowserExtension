@@ -54,7 +54,7 @@ var init = (done) => {
 
 var capture = (force) => {
   chrome.storage.sync.get((config) => {
-    serverHost = config.tradingmlHost;
+    serverHost = config.tradingmlHost + "?type=" + config.tradingmlType;
 
     if (selection && (config.method === 'crop' || (config.method === 'wait' && force))) {
       jcrop.release()
@@ -98,7 +98,7 @@ var save = (image, format, save) => {
       chrome.storage.local.get([name], function(result) {
         var settings = {
           type: "POST",
-          url: serverHost + '?type=3',
+          url: serverHost,
           data: {
             "image": {
               name: filename(format),
@@ -193,9 +193,12 @@ position: fixed; box-shadow: 0px 12px 48px rgba(29, 5, 64, 0.32);
         <span id="result-predict-name-info">Forme prédite :</span>
         <span id="result-predict-name">rectangle</span>
       </div>
-      <div id="result-predict-percen-container">
+      <div id="result-predict-percent-container">
         <span id="result-predict-percent-info">Probabilité :</span>
         <span id="result-predict-percent">50%</span>
+      </div>
+      <div id="result-hint-image-container">
+        <img id="result-hint-image"/>
       </div>
     </div>
 </div>
@@ -208,6 +211,19 @@ position: fixed; box-shadow: 0px 12px 48px rgba(29, 5, 64, 0.32);
   $(modal).find('#result-predict-name').first().text(predictName);
   $(modal).find('#result-predict-percent').first().text(predictPercent);
 
+  let resultHintImage = $(modal).find('#result-hint-image')[0];
+
+  switch (predictName) {
+    case "Rectangle":
+      resultHintImage.src = chrome.extension.getURL("images/rectangle-info.png");
+      break;
+    case "Flag":
+      resultHintImage.src = chrome.extension.getURL("images/flag-info.png");
+      break;
+    case "Double bottom":
+      resultHintImage.src = chrome.extension.getURL("images/double-bottom-info.png");
+      break;
+  }
   dialog.querySelector("button").addEventListener("click", () => {
     dialog.close();
   });

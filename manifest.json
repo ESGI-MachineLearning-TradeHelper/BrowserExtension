@@ -23,7 +23,10 @@
 
   "web_accessible_resources": [
     "/images/Jcrop.gif",
-    "/images/pixel.png"
+    "/images/pixel.png",
+    "/images/double-bottom-info.png",
+    "/images/flag-info.png",
+    "/images/rectangle-info.png"
   ],
 
   "commands": {
